@@ -72,9 +72,7 @@ img {
   background-color: rgb(219, 217, 213);
   cursor: not-allowed;
 }
-.load-more:hidden {
-  display: none;
-}
+
 .load-more {
   cursor: pointer;
   display: flex;
@@ -89,6 +87,9 @@ img {
   border-color: rgb(122, 247, 122);
   font-style: oblique;
   font-weight: 600;
+}
+.load-more.hidden {
+  display: none;
 }
 .load-more:hover,
 .load-more:focus {

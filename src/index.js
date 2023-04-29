@@ -2,7 +2,6 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import NewApiServise from './fetchCards.js';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import axios from 'axios';
 import LoadMoreBtn from './LoadMoreBtn.js';
 
 const form = document.querySelector('#search-form');
@@ -12,26 +11,25 @@ const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   isHidden: true,
 });
-
 const newApiServise = new NewApiServise();
-console.log(newApiServise);
+
 form.addEventListener('submit', onSubmit);
 loadMoreBtn.button.addEventListener('click', onClick);
+loadMoreBtn.hide();
 function onSubmit(event) {
   event.preventDefault();
-  loadMoreBtn.show();
-
+  newApiServise.resetPage();
   const input = form.firstElementChild.value.trim();
   newApiServise.name = input;
   gallery.innerHTML = '';
   form.reset();
-
+  loadMoreBtn.show();
+  loadMoreBtn.disable();
   newApiServise
     .fetchPhotos(input)
     .then(({ hits }) => {
-      console.log(hits);
-
       if (hits.length === 0) {
+        loadMoreBtn.hide();
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
@@ -40,10 +38,12 @@ function onSubmit(event) {
         addMarkup(hits);
       }
     })
-    .then(addLightbox);
+    .then(addLightbox)
+    .catch(error => console.log(error));
+  loadMoreBtn.enable();
 }
 
-function addMarkup(hits) {
+async function addMarkup(hits) {
   const markup = hits
     .map(
       ({
@@ -76,7 +76,7 @@ function addMarkup(hits) {
     )
     .join('');
 
-  gallery.innerHTML = markup;
+  gallery.insertAdjacentHTML('beforeend', markup);
 }
 
 function addLightbox() {
@@ -84,11 +84,21 @@ function addLightbox() {
   lightbox.refresh();
 }
 function onClick(event) {
+  loadMoreBtn.disable();
   newApiServise.incrementPage();
   newApiServise
     .fetchPhotos()
-    .then(({ hits }) => {
+    .then(({ hits, totalHits }) => {
       addMarkup(hits);
+      if (100 * newApiServise.page > totalHits) {
+        loadMoreBtn.hide();
+        return Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+
+      loadMoreBtn.enable();
     })
-    .then(addLightbox);
+    .then(addLightbox)
+    .catch(error => console.log(error));
 }

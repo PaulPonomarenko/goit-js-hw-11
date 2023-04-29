@@ -27,13 +27,16 @@ function onSubmit(event) {
   loadMoreBtn.disable();
   newApiServise
     .fetchPhotos(input)
-    .then(({ hits }) => {
+    .then(({ hits, totalHits }) => {
       if (hits.length === 0) {
         loadMoreBtn.hide();
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
         return;
+      } else if (totalHits <= 40) {
+        loadMoreBtn.hide();
+        addMarkup(hits);
       } else {
         addMarkup(hits);
       }
@@ -89,14 +92,16 @@ function onClick(event) {
   newApiServise
     .fetchPhotos()
     .then(({ hits, totalHits }) => {
-      addMarkup(hits);
       if (100 * newApiServise.page > totalHits) {
         loadMoreBtn.hide();
         return Notify.failure(
           "We're sorry, but you've reached the end of search results."
         );
+      } else if (totalHits <= 40) {
+        loadMoreBtn.disable();
+        return;
       }
-
+      addMarkup(hits);
       loadMoreBtn.enable();
     })
     .then(addLightbox)

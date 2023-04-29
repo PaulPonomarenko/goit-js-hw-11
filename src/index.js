@@ -1,5 +1,5 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { fetchPhotos } from './fetchCards';
+import NewApiServise from './fetchCards.js';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import axios from 'axios';
@@ -12,15 +12,22 @@ const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   isHidden: true,
 });
-console.log(loadMoreBtn);
 
+const newApiServise = new NewApiServise();
+console.log(newApiServise);
 form.addEventListener('submit', onSubmit);
+loadMoreBtn.button.addEventListener('click', onClick);
 function onSubmit(event) {
   event.preventDefault();
+  loadMoreBtn.show();
+
   const input = form.firstElementChild.value.trim();
+  newApiServise.name = input;
   gallery.innerHTML = '';
   form.reset();
-  fetchPhotos(input)
+
+  newApiServise
+    .fetchPhotos(input)
     .then(({ hits }) => {
       console.log(hits);
 
@@ -28,7 +35,6 @@ function onSubmit(event) {
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
-
         return;
       } else {
         addMarkup(hits);
@@ -76,4 +82,13 @@ function addMarkup(hits) {
 function addLightbox() {
   const lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();
+}
+function onClick(event) {
+  newApiServise.incrementPage();
+  newApiServise
+    .fetchPhotos()
+    .then(({ hits }) => {
+      addMarkup(hits);
+    })
+    .then(addLightbox);
 }

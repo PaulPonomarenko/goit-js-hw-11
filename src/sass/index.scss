@@ -1,1 +1,24 @@
 @import './common';
+:root {
+  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 250ms;
+}
+img {
+  width: 300px;
+  height: 200px;
+  //   height: 100%;
+  //   width: 100%;
+  object-fit: cover;
+  transition: transform var(--animation-duration) var(--timing-function);
+}
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 50px;
+  gap: 20px;
+}
+.gallery__link {
+  display: block;
+  text-decoration: none;
+}

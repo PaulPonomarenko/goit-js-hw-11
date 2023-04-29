@@ -2,8 +2,17 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { fetchPhotos } from './fetchCards';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import axios from 'axios';
+import LoadMoreBtn from './LoadMoreBtn.js';
+
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
+// const btnLoadMoreRef = document.querySelector('.load-more');
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '.load-more',
+  isHidden: true,
+});
+console.log(loadMoreBtn);
 
 form.addEventListener('submit', onSubmit);
 function onSubmit(event) {

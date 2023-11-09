@@ -6,7 +6,7 @@ import LoadMoreBtn from './LoadMoreBtn.js';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
-// const btnLoadMoreRef = document.querySelector('.load-more');
+
 const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   isHidden: true,
